@@ -78,21 +78,21 @@ Window {
     }
 
 
-//    MyBubble2 {
-//                id: bubble
-//                //anchors.centerIn: parent
-//                height:300
-//                width:300
-//                anchors.horizontalCenter: parent.horizontalCenter
-//                //anchors.top: panel.bottom
-//                anchors.topMargin: 20
-//                roll: Math.round(roll1.value)
-//                pitch: -Math.round(roll2.value-100)
-//            }
+    MyBubble2 {
+                id: bubble
+                //anchors.centerIn: parent
+                height:300
+                width:300
+                anchors.horizontalCenter: parent.horizontalCenter
+                //anchors.top: panel.bottom
+                anchors.topMargin: 20
+                roll: Math.round(roll1.value)
+                pitch: -Math.round(roll2.value-100)
+            }
     Digital {
         value: roll3.value
         maxvalue: 500
-        interval: 100
+        //interval: 100
         width: 140
         height: 70
         digname: "Альтиметр"
@@ -111,10 +111,11 @@ Window {
         maxvalue: 500
         linewidth: 4
         fill:true
-        graphtype: 1
-        graphtimer: true
+        graphtype: 2
+        graphtimer: false
         fillopaque:0.6
         linecolor:"white"
+
 
     }
     Camera {

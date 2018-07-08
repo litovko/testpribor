@@ -52,37 +52,65 @@ Item {
         property string fillcolor: "darkgray"
         property string linecolor: "yellow"
         property real fillopaque: 1
+        property bool onpaint: false
         function getY(v) {
             return height-(height)*v/maxvalue
         }
         function step(){
+            if(onpaint) return
+
             x0=xv
             xv=xv+linewidth
-            if (xv>width) x0=xv=0
+            if (xv>width) {x0=0; xv=linewidth}
             y0=yv
             yv = getY(value)
+            //console.log("step>"+" x0="+x0+" xv="+xv+" y0"+y0+" yw="+yv+" value="+value)
+            onpaint=true
             requestPaint()
         }
 
         function draw_1(){
             var ctx = getContext("2d")
             ctx.save()
-            if (xv===0) xv=linewidth
+            //if (xv===0) xv=linewidth
+            //console.log("draw>"+" x0="+x0+" xv="+xv+" y0"+y0+" yw="+yv+" value="+value)
             ctx.clearRect(xv-linewidth/2, 0, linewidth, height)
-            ctx.globalAlpha = fillopaque
+            if(x0) ctx.clearRect(0, 0, linewidth, height)
             //line(ctx,xv,height,xv,0,"black",linewidth) //background
-            line(ctx,x0,y0,xv,yv,linecolor,linewidth)
+
             if (fill)
             {
                 ctx.globalAlpha = 0.4
                 line(ctx,xv,getY(0),xv,yv,fillcolor,linewidth)
             }
             ctx.globalAlpha = fillopaque
+            line(ctx,x0,y0,xv,yv,linecolor,linewidth)
+            ctx.globalAlpha = fillopaque
             line(ctx,xv+linewidth,height,xv+linewidth,0,"gray",linewidth)
 
             ctx.restore()
 
         }
+        function box(){
+            var ctx = getContext("2d")
+//            var l=canvas.height/10
+//            line(ctx,0,0,0,l,"white",2)
+//            line(ctx,0,0,l,0,"white",2)
+
+//            line(ctx,canvas.width, canvas.height,canvas.width-l,canvas.height,"white",2)
+//            line(ctx,canvas.width, canvas.height,canvas.width,canvas.height-l,"white",2)
+
+            ctx.save()
+            ctx.strokeStyle = "darkgray"
+            ctx.globalAlpha = 0.4
+            ctx.lineWidth = 2
+            //ctx.setLineDash([5, 15]);
+
+            ctx.strokeRect(0, 0, canvas.width, canvas.height)
+            //ctx.stroke();
+            ctx.restore()
+        }
+
         function draw_2(){
             var ctx = getContext("2d")
 
@@ -93,7 +121,7 @@ Item {
             ctx.clearRect(0, 0, width, height)
             ctx.drawImage(imageData, 0, 0);
             ctx.globalAlpha = fillopaque
-            line(ctx,xv-linewidth/2,getY(0),xv-linewidth/2,yv,fillcolor,linewidth)
+            if (fill)line(ctx,xv-linewidth/2,getY(0),xv-linewidth/2,yv,fillcolor,linewidth)
             line(ctx,xv-linewidth-linewidth/2,y0,xv-linewidth/2,yv,linecolor,linewidth) // graph line
             //ctx.clearRect(0, 0, 20, 20)
             ctx.restore()
@@ -101,6 +129,8 @@ Item {
         onPaint: {
             if (graphtype===1) draw_1()
             else draw_2()
+            box()
+            onpaint=false
         }
     }
 }

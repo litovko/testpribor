@@ -18,8 +18,11 @@ Item {
     property real stepSize: 10
     property real minorTickmarks: 1
     property real warningThreshold: 90
-    property alias thirdvisible: cg3.visible
+    property bool thirdvisible: true
 
+    onThirdvisibleChanged: {
+        console.log("vis:"+thirdvisible)
+    }
 
     CircularGauge {
         id: cg1
@@ -108,9 +111,10 @@ Item {
                     color: pr.value2 >= warningThreshold ? "#e34c22" : "lightgreen"
                     font.pixelSize: parent.width/6
                     style: Text.Outline
-                    anchors.top: rpmText.bottom
+
                     anchors.horizontalCenter: thirdvisible?parent.horizontalCenter:undefined
                     anchors.right: thirdvisible?undefined:parent.right
+
                 }
                 Text {
                     text: value3.toString()
