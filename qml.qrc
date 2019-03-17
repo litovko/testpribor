@@ -10,5 +10,12 @@
         <file>main.cpp</file>
         <file>Digital.qml</file>
         <file>Dinagraph.qml</file>
+        <file>CenterTick.qml</file>
+        <file>CenterTik.qml</file>
+        <file>CenterTik_Y.qml</file>
+        <file>Arrow.qml</file>
+        <file>GArrow.qml</file>
+        <file>figure.js</file>
+        <file>GAzimuth.qml</file>
     </qresource>
 </RCC>

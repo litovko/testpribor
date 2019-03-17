@@ -1,9 +1,14 @@
 import QtQuick 2.0
 
 Item {
+    id: coord
     property int xvalue: 0
     property int yvalue: 0
+    property int y_axes: 0
+    property int position: 0
     property alias backgroundopacity: r.opacity
+    property var prev: []
+
     Rectangle {
         id: r
         anchors.fill: parent
@@ -11,7 +16,16 @@ Item {
         opacity: 0.6
 
     }
-    onXvalueChanged: {
+    onXvalueChanged: xval()
+    onYvalueChanged: yval()
+    onY_axesChanged: yax();
+    function  yax() {
+        if (y_axes>0 ) state="UP"
+        if (y_axes<0 ) state="DOWN"
+        console.log(state)
+    }
+
+    function xval() {
         //console.log(xvalue)
         if (xvalue&1) l1.state="ON"; else l1.state="OFF"
         if (xvalue&2) l2.state="ON"; else l2.state="OFF"
@@ -19,43 +33,97 @@ Item {
         if (xvalue&8) r1.state="ON"; else r1.state="OFF"
         if (xvalue&16) r2.state="ON"; else r2.state="OFF"
         if (xvalue&32) r3.state="ON"; else r3.state="OFF"
-        if (xvalue&64) c.state="ON"; else c.state="OFF"
+        if (xvalue&128) cx.x_on=true; else cx.x_on=false
     }
-    onYvalueChanged: {
-        if (xvalue&1) y1.state="ON"; else y1.state="OFF"
-        if (xvalue&2) y2.state="ON"; else y2.state="OFF"
-        if (xvalue&4) y3.state="ON"; else y3.state="OFF"
-        if (xvalue&8) y4.state="ON"; else y4.state="OFF"
-        if (xvalue&16) y5.state="ON"; else y5.state="OFF"
-        if (xvalue&32) y5.state="ON"; else y6.state="OFF"
-        if (xvalue&64) y7.state="ON"; else y7.state="OFF"
+    function _pr() {
+        var s="|"
+        for (var i = 0; i < prev.length; i++)
+        {
+            s=s+prev[i].text+"|"
+        }
+        console.log(s);
     }
-    Component.onCompleted: {
-        l1.state="OFF"
-        l2.state="OFF"
-        l3.state="OFF"
-        r1.state="OFF"
-        r2.state="OFF"
-        r3.state="OFF"
-        y1.state="OFF"
-        y2.state="OFF"
-        y3.state="OFF"
-        y4.state="OFF"
-        y5.state="OFF"
-        y6.state="OFF"
-        y7.state="OFF"
-        c.state="OFF"
+
+    function change_y(y,v) {
+        //console.log("0:");
+        //_pr();
+        //console.log("T:"+y.text+" st:"+y.state+" val:"+v)
+        if (v&&y.state==="ON") return;
+        if (v) { y.state="ON";
+            for (var i = 0; i < prev.length; i++)
+                if (prev[i]===y) prev.splice(i,1);
+            //console.log("1:"); _pr();
+            return;}
+        if (y.state==="ON") {
+            y.state="OFF-GREEN";
+            prev.push(y,y,y);
+            //console.log("2:"); _pr();
+            return;
+        }
+        if (y.state==="OFF-GREEN") {
+            if (prev.indexOf(y)>=0) {
+                prev.splice(prev.indexOf(y),1);
+                //console.log("3:");
+                //_pr()
+            }
+            else  y.state="OFF"; return;
+        }
+    }
+    function yval() {
+        change_y(y1,yvalue&1)
+        change_y(y2,yvalue&2)
+        change_y(y3,yvalue&4)
+        change_y(y4,yvalue&8)
+        change_y(y5,yvalue&16)
+        change_y(y6,yvalue&32)
+        change_y(y7,yvalue&64)
+        change_y(c,yvalue&128)
+        //_pr()
+    }
+
+    onPositionChanged: {
+        if (xvalue!=position&255) { xvalue=position&255; xval()}
+        if (yvalue!=position>>8)  { yvalue=position>>8; yval()}
 
     }
+    Arrow {
+        anchors.fill: parent
+        state: coord.state
+    }
+
+    states: [
+        State {
+            name: "UP"
+            PropertyChanges {
+                target: direction
+                text: "ВВЕРХ"
+            }
+        },
+        State {
+            name: "DOWN"
+            PropertyChanges {
+                target: direction
+                text: "ВНИЗ"
+            }
+        }
+    ]
 
     Rectangle {
         color: "transparent"
         border.color: "transparent"
 
         anchors.fill: parent
+        Text {
+            id: direction
+            text: qsTr("<>")
+            color: "yellow"
+            anchors.top: parent.verticalCenter
+            anchors.right: parent.right
+        }
         Column { //x axis
+            id: col
             anchors.centerIn: parent
-            spacing: 15
+            spacing: 25
             Tik {
                 id: y1
                 text:"-50"
@@ -63,15 +131,21 @@ Item {
                 height: 10
 
             }
-            Tik {
+            CenterTik_Y {
                 id: c
-                text:"0"
                 width: 20
-                height: 12
+                height:20
+                CenterTick {
+                    id:cx
+                    anchors.fill: parent
+                }
+
+
                 Row {
                     anchors.right: c.left
                     anchors.top:  c.top
                     anchors.margins: 20
+                    spacing: 15
                     Tik {
                         id: l1
                         text:"1"
@@ -105,9 +179,10 @@ Item {
                     anchors.left: c.right
                     anchors.top:  c.top
                     anchors.margins: 20
+                    spacing: 15
                     Tik {
                         id: r1
-                        text:"1"
+                        text:"4"
                         width: 20
                         height: 10
                         transform: Rotation {  angle: -90}
@@ -116,7 +191,7 @@ Item {
                     }
                     Tik {
                         id: r2
-                        text:"2"
+                        text:"5"
                         width: 20
                         height: 10
                         transform: Rotation {  angle: -90}
@@ -125,7 +200,7 @@ Item {
                     }
                     Tik {
                         id: r3
-                        text:"3"
+                        text:"6"
                         width: 20
                         height: 10
                         transform: Rotation {  angle: -90}
@@ -135,6 +210,7 @@ Item {
 
                 }
             }
+
             Tik {
                 id: y2
                 text:"50"
