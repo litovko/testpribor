@@ -12,9 +12,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    qJoyStick.cpp \
+    cjoystick.cpp
 
 RESOURCES += qml.qrc
+INCLUDEPATH += $$PWD/SDL2/include
+LIBS += -L$$PWD/SDL2/lib/x64  -lSDL2 -lSDL2main
+#LIBS += -L$$PWD/SDL2/lib/x64
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 #QML_IMPORT_PATH =
@@ -31,3 +36,9 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     figure.js
+DESTDIR=D:\testpribor
+
+HEADERS += \
+    cjoystick.h \
+    qJoyStick.h
+message(LIBS $$LIBS)

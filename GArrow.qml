@@ -3,14 +3,29 @@ import "figure.js" as Fig
 
 Item {
     id: el
-    property int linewidth: 5
+    property int linewidth: 2
     property color linestyle: Qt.rgba(1.0, 1.0, 1.0, 0.5)
     property color fillstyle: Qt.rgba(1.0, 0.0, 0.0, 0.5)
     property real g_ld: 12/28
     property real g_la: 20/35
     property int angle: 0
+    property int value: 0
+    property int delta: 5
+    property int maxvalue: 127
+    property bool positive: true
+    onValueChanged: {
+
+        if ((value > delta) && positive) {state="GREEN"; }
+        else if ((value < delta) && !positive) {state="RED";}
+             else { state="NOP";canvas.requestPaint(); return}
+        if (Math.abs(value) <= delta) state="NOP"
+        canvas.requestPaint()
+
+    }
     onAngleChanged: canvas.requestPaint()
     onFillstyleChanged: canvas.requestPaint();
+    onStateChanged: canvas.requestPaint()
+
     Canvas {
         id: canvas
         width: parent.width
@@ -41,6 +56,13 @@ Item {
             ctx.lineTo(x1,lw)
             ctx.closePath()
             ctx.fill()
+            //lw=4
+            //ctx.lineWidth = lw
+            var mp=(height-lw)*Math.abs(value)/maxvalue
+            if (positive & (value<0)) mp=0
+            if (!positive & (value>0)) mp=0
+            ctx.moveTo(x0,0)
+            ctx.lineTo(x0,mp)
             ctx.stroke()
             ctx.restore()
         }
@@ -51,14 +73,35 @@ Item {
             name: "ON"
             PropertyChanges {
                 target: el
-                fillstyle: Qt.rgba(1,0,0,1)
+                fillstyle: Qt.rgba(1,0,0,0.5)
             }
         },
         State {
             name: "OFF"
             PropertyChanges {
                 target: el
-                fillstyle: Qt.rgba(0,1,0,1)
+                fillstyle: Qt.rgba(0,1,0,0.5)
+            }
+        },
+        State {
+            name: "RED"
+            PropertyChanges {
+                target: el
+                fillstyle: Qt.rgba(1.0, 0.0, 0.0, 0.5)
+            }
+        },
+        State {
+            name: "GREEN"
+            PropertyChanges {
+                target: el
+                fillstyle: Qt.rgba(0.0, 1.0, 0.0, 0.5)
+            }
+        },
+        State {
+            name: "YELLOW"
+            PropertyChanges {
+                target: el
+                fillstyle: Qt.rgba(1.0, 1.0, 0.0, 0.5)
             }
         },
         State {
@@ -72,7 +115,7 @@ Item {
     transitions: Transition {
         ColorAnimation {
             property: "fillstyle"
-            easing.type: Easing.bezierCurve
+            easing.type: Easing.Linear
             duration: 200
         }
     }

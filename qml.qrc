@@ -17,5 +17,8 @@
         <file>GArrow.qml</file>
         <file>figure.js</file>
         <file>GAzimuth.qml</file>
+        <file>NPA_move.qml</file>
+        <file>NPA_hand.qml</file>
+        <file>NPA_group.qml</file>
     </qresource>
 </RCC>

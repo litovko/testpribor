@@ -11,11 +11,11 @@ function text_m(c,x,y,h,v, ta, bl, col){
     c.strokeText();
     c.restore();
 }
-function line(c, x1,y1,x2,y2)
+function line(c, x1,y1,x2,y2, lw)
 {
     c.save();
     c.strokeStyle = Qt.rgba(1.0, 1.0, 1.0, 0.5)
-    c.lineWidth = 5
+    c.lineWidth = typeof lw !== 'undefined' ? lw : 5;
     c.beginPath()
     c.lineCap="butt"
     c.moveTo(x1,y1);
@@ -23,6 +23,18 @@ function line(c, x1,y1,x2,y2)
     c.stroke();
     c.restore();
 }
+function circle(c, x, y, r, s)
+{
+    c.save();
+    c.fillStyle=s
+    c.beginPath()
+    c.arc(x, y, r, 0 ,Math.PI*2)
+    c.closePath()
+    c.fill()
+    c.stroke()
+    c.restore()
+}
+
 function draw1(c, p, len, angle)
 {
     angle=angle-60;
@@ -70,3 +82,29 @@ function draw1(c, p, len, angle)
     c.restore();
 
 }
+function arrow(c, x, y, len, angle, fillstyle)
+{
+
+
+    var s8=len/8 // выступ угла скобы
+    var s9=(len)/2   // смещение центра отверстия по Х -  угол наклона оси 30 градусов
+    var s10=len*Math.sqrt(3)/2   // смещение центра отверстия по Y
+    c.save()
+    c.beginPath()
+    c.fillStyle = fillstyle
+    c.lineWidth = 1
+    c.translate(x, y)
+    c.rotate(angle*Math.PI/180);
+    var lx=Math.sin(Math.PI/3)*len
+    var ly=Math.cos(Math.PI/3)*len
+    c.moveTo(0,-len)
+    c.lineTo(lx,ly);
+    c.lineTo(-lx,ly)
+    c.lineTo(0,-len);
+    c.closePath()
+    c.fill()
+    c.stroke();
+    c.restore();
+
+}
+
